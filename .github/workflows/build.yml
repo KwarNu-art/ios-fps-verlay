@@ -1,0 +1,31 @@
+name: Build FPS Overlay  
+  
+on:  
+  push:  
+    branches: [ main ]  
+  pull_request:  
+  workflow_dispatch:  
+  
+jobs:  
+  build:  
+    runs-on: macos-14  
+    steps:  
+      - uses: actions/checkout@v4  
+  
+      - name: Compile dynamic library for iOS 15+ (arm64)  
+        run: |  
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)  
+          xcrun --sdk iphoneos clang -arch arm64 \  
+            -isysroot "$SDK" \  
+            -miphoneos-version-min=15.0 \  
+            -dynamiclib \  
+            -fobjc-arc \  
+            -framework UIKit \  
+            -framework QuartzCore \  
+            -o FPSOverlay.dylib FPSOverlay.m  
+  
+      - name: Upload artifact  
+        uses: actions/upload-artifact@v4  
+        with:  
+          name: FPSOverlay-dylib  
+          path: FPSOverlay.dylib  
