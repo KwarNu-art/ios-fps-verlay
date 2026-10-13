@@ -25,13 +25,14 @@ static UIColor *FPSGreen(CGFloat a) {
     self.layer.borderColor = FPSGreen(0.55).CGColor;  
     self.backgroundColor = FPSGreen(0.10);  
   
-    // Frosted glass base panel  
+    // Frosted glass background layer  
     UIVisualEffectView *glass = [[UIVisualEffectView alloc]  
         initWithEffect:[UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterialDark]];  
     glass.frame = self.bounds;  
     glass.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;  
     [self addSubview:glass];  
   
+    // FPS display label  
     _label = [[UILabel alloc] initWithFrame:self.bounds];  
     _label.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;  
     _label.textAlignment = NSTextAlignmentCenter;  
@@ -69,7 +70,7 @@ static UIColor *FPSGreen(CGFloat a) {
   
 @end  
   
-// MARK: - Overlay Window Management  
+// MARK: - Installer & Life-Cycle Bootstrap  
   
 static UIWindow *gFPSWindow = nil;  
 static FPSLabelView *gFPSView = nil;  
@@ -108,13 +109,13 @@ static void FPSOverlayInstall(void) {
     [view startMeasuring];  
 }  
   
-// Automatic bootstrap upon app activation  
+// Automatically initializes when the target app becomes active  
 __attribute__((constructor))  
 static void FPSOverlayBootstrap(void) {  
     [[NSNotificationCenter defaultCenter]  
         addObserverForName:UIApplicationDidBecomeActiveNotification  
                     object:nil  
-                     queue:NSOperationQueue.mainOperationQueue  
+                     queue:[NSOperationQueue mainQueue]  
                 usingBlock:^(NSNotification *note) {  
         FPSOverlayInstall();  
     }];  
